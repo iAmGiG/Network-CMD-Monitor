@@ -1,10 +1,10 @@
 # Network CMD Monitor
 
 ## Mission Statement
-"To be a tool to help IT administrators monitor critical network ports on client machines that are already designed to accept remote CMDs (such as SSH ports or similar). Using an effective method of prioritizing and identifying malicious behavior via regular expressions and using off-the-shelf NIST standards, this tool aims to provide a lightweight monitoring solution that can be deployed quickly without much overhead."
+"To be a tool to help IT administrators monitor critical network ports on client machines that are already designed to accept remote CMDs (such as SSH ports or similar). Using an effective method of prioritizing and identifying malicious behavior via regular expressions, this tool aims to provide a lightweight monitoring solution that can be deployed quickly without much overhead."
 
 ## Introduction
-This project is designed as a logging and alert prioritization tool rather than an interceptor. It is intended for IT administrators who need to ensure the security of network ports that accept remote commands. The tool leverages regular expressions to detect potentially malicious activity and uses NIST guidelines to prioritize alerts.
+This project is designed as a logging and alert prioritization tool rather than an interceptor. It is intended for IT administrators who need to ensure the security of network ports that accept remote commands. The tool leverages regular expressions to detect potentially malicious activity and prioritize alerts.
 
 ## Project Components
 ### Server
@@ -31,7 +31,7 @@ Utilizes a tiered system to elevate the priority level of alerts. This system is
 
 ### Logging and Alerts
 - **Logs**: Check logs for accurate time stamps and descriptions of both normal and suspect activities.
-- **Alerts**: Review alert outputs to ensure that the prioritization corresponds to the potential threat levels as per NIST guidelines.
+- **Alerts**: Review alert outputs to ensure that the prioritization corresponds to the potential threat levels.
 
 ### Evaluation Criteria
 - **Accuracy**: Measure the accuracy of the pattern detection system in identifying malicious commands.
