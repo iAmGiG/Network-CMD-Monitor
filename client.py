@@ -44,6 +44,7 @@ def main():
         f"Lanuching Sim Attack at {start_time}.\nUsing a total number of {num_connections} independent connections")
     for _ in range(num_connections):
         # Random number of attacks per connection
+        print(f"Sim Attack number: {_}.\n")
         num_attacks = random.randint(5, 20)
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.connect((SERVER_IP, SERVER_PORT))
