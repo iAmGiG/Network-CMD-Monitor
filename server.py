@@ -33,6 +33,11 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
 
 
+class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    """Handle requests in a separate thread."""
+    pass
+
+
 class ConnectionHandler(socketserver.BaseRequestHandler):
     """
     Handles incoming network connections, logs command data, and evaluates potential threats based on configured regex patterns.
@@ -41,6 +46,8 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
     def handle(self):
         # Generate a unique ID for the connection
         connection_id = str(uuid.uuid4())
+        print(f"New connection: {connection_id} from {self.client_address}")
+
         # Initialize log data with connection ID and timestamp
         log_data = [connection_id, str(datetime.datetime.now())]
 
@@ -53,6 +60,8 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
                     break
                 commands.append(data.strip())
                 log_data.append(data.strip())  # Log each received command
+                # Print each command as it's received
+                print(f"Received command: {data.strip()}")
         except Exception as e:
             print(f"Error receiving data: {e}")
 
@@ -61,8 +70,8 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
 
         # Process received commands and evaluate alerts
         alert_level = self.check_alerts(commands)
-        print(f"Connection ID: {connection_id}")
-        print(f"Received commands: {', '.join(commands)}")
+        print(f"Connection closed: {connection_id}")
+        print(f"Total commands received: {len(commands)}")
         print(f"Alert Level: {alert_level}")
 
     def write_log(self, log_data):
