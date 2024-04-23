@@ -13,6 +13,7 @@ COMMANDS = [
     'netstat', 'telnet 192.168.0.1 25', '../etc/passwd', 'admin\' OR 1=1 --', '<script>alert("XSS")</script>'
 ]
 
+
 def generate_command():
     """Randomly choose a command from the list."""
     return random.choice(COMMANDS)
@@ -39,7 +40,8 @@ def main():
     start_time = time.time()
     # Random number of connections between 2 and 3
     num_connections = random.randint(2, 3)
-
+    print(
+        f"Lanuching Sim Attack at {start_time}.\nUsing a total number of {num_connections} independent connections")
     for _ in range(num_connections):
         # Random number of attacks per connection
         num_attacks = random.randint(5, 20)
