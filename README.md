@@ -60,3 +60,49 @@ python3 -m pip install -r requirements.txt
 - **Broader Pattern Database**: Expand the regex library to cover a wider range of malicious activities, possibly integrating community-contributed patterns.
 - **Integration with external repositories** for enhanced pattern recognition.
 - **Development of a more robust client-server** architecture to handle real-time data monitoring and logging.
+
+## Components
+
+### server.py
+
+- **Purpose**: Manages incoming network connections, logs command data, and evaluates potential threats based on configured regex patterns.
+- **Functionality**:
+  - Listens for incoming TCP connections on a specified port.
+  - Handles each connection in a separate thread to process multiple clients simultaneously.
+  - Sets timeouts on client connections to ensure no idle connection hogs resources.
+  - Uses regex patterns to detect various types of security threats and logs them.
+  - Prioritizes alerts based on the frequency and type of detected threats.
+
+### client.py (Assuming existence and role)
+
+- **Purpose**: Simulates network attacks by sending a mixture of benign and malicious commands to the server.
+- **Functionality**:
+  - Connects to the server at specified intervals.
+  - Randomly generates commands based on predefined attack vectors and benign operations.
+  - Logs responses from the server to evaluate the effectiveness of pattern detection.
+
+## Usage Instructions
+
+### Running the Server
+
+```bash
+python server.py
+```
+
+- Ensure server.py is configured with the correct IP and port settings.
+- The server will start listening for incoming connections and process commands as per the defined regex rules.
+
+### Running the Client
+
+```bash
+python client.py
+```
+
+- Configure client.py with the server's IP and port.
+- Start the client to begin sending commands at random intervals to simulate different network behaviors.
+
+### Testing Policy
+
+- **Test Environment**: Ensure both client and server are running in a controlled environment to prevent unintended network traffic and potential security risks.
+- **Simulations**: Regularly test with new attack vectors to ensure the detection patterns remain effective against evolving threats.
+- **Logging and Monitoring**: Continuously monitor log outputs for unexpected behaviors or missed detections.
