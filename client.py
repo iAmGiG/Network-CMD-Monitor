@@ -17,25 +17,40 @@ def generate_command():
     """Randomly choose a command from the list."""
     return random.choice(COMMANDS)
 
+
 def random_interval():
     """Generate a random interval to mimic human behavior."""
     return random.uniform(0.5, 3.0)  # Between 0.5 and 3 seconds
+
+
+def run_attack(sock, num_attacks):
+    """Run the attack simulation for the given number of attacks."""
+    for _ in range(num_attacks):
+        cmd = generate_command()
+        sock.sendall(cmd.encode('utf-8'))
+        print(f"Sent: {cmd}")
+        time.sleep(random_interval())
+
 
 def main():
     """
     Runs the show
     """
     start_time = time.time()
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.connect((SERVER_IP, SERVER_PORT))
-        
-        while time.time() - start_time < ATTACK_DURATION:
-            cmd = generate_command()
-            sock.sendall(cmd.encode('utf-8'))
-            print(f"Sent: {cmd}")
-            time.sleep(random_interval())
-    
-    print("Attack simulation completed.")
+    # Random number of connections between 2 and 3
+    num_connections = random.randint(2, 3)
+
+    for _ in range(num_connections):
+        # Random number of attacks per connection
+        num_attacks = random.randint(5, 20)
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.connect((SERVER_IP, SERVER_PORT))
+            run_attack(sock, num_attacks)
+
+    end_time = time.time()
+    attack_duration = end_time - start_time
+    print(f"Attack simulation completed in {attack_duration:.2f} seconds.")
+
 
 if __name__ == "__main__":
     main()

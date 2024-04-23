@@ -4,9 +4,12 @@ import datetime
 import csv
 import uuid
 import re
+import logging
+from logging.handlers import RotatingFileHandler
 
+# Configuration
 HOST = '127.0.0.1'
-PORT = 5000  # Change this to your desired port
+PORT = 5000  # You can choose another port
 LOG_FILE = 'server_log.csv'
 ALERT_LEVELS = {
     0: 'None',
@@ -15,12 +18,11 @@ ALERT_LEVELS = {
     3: 'High',
     4: 'Critical'
 }
-
 REGEX_PATTERNS = {
-    'system_call': r'.*(netstat|ls|pwd).*',
-    'security_injection': r'.*(;|\||&|`|\\|\'|--|\b(UPDATE|INSERT|DROP|DELETE)\b).*',
+    'system_call': r'.*\b(netstat|ls|pwd)\b.*',
+    'security_injection': r'.*[;|\||&|`|\\|\'|\-|\b(UPDATE|INSERT|DROP|DELETE)\b].*',
     'sql_injection': r".*('|\\|--|\b(UPDATE|INSERT|DROP|DELETE)\b).*",
-    'xss_injection': r'.*(<script>|<iframe>|<object>|<embed>|<svg>).*',
+    'xss_injection': r'.*<script>.*|.*<iframe>.*|.*<object>.*|.*<embed>.*|.*<svg>.*',
     'rfi_inclusion': r'.*(https?://|ftp://).*',
     'path_traversal': r'.*(\.\./|\.\.\\).*',
     'port_scanning': r'.*(nmap|nc|netcat|telnet).*\s+(\d{1,5})',
@@ -28,9 +30,19 @@ REGEX_PATTERNS = {
 }
 
 
-class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
-    """Handle requests in a separate thread."""
-    pass
+def setup_logger():
+    """Sets up a logger with rotation."""
+    logger = logging.getLogger('CommandLogger')
+    logger.setLevel(logging.INFO)
+    handler = RotatingFileHandler(LOG_FILE, maxBytes=10240, backupCount=5)
+    formatter = logging.Formatter(
+        '%(asctime)s,%(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger
+
+
+logger = setup_logger()
 
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
@@ -40,18 +52,12 @@ class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
 
 class ConnectionHandler(socketserver.BaseRequestHandler):
     """
-    Handles incoming network connections, logs command data, and evaluates potential threats based on configured regex patterns.
+    Handles incoming network connections, logs command data, and evaluates potential threats.
     """
 
     def handle(self):
-        # Generate a unique ID for the connection
         connection_id = str(uuid.uuid4())
         print(f"New connection: {connection_id} from {self.client_address}")
-
-        # Initialize log data with connection ID and timestamp
-        log_data = [connection_id, str(datetime.datetime.now())]
-
-        # Receive and log commands from the connection
         commands = []
         try:
             while True:
@@ -59,26 +65,16 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
                 if not data:
                     break
                 commands.append(data.strip())
-                log_data.append(data.strip())  # Log each received command
-                # Print each command as it's received
                 print(f"Received command: {data.strip()}")
         except Exception as e:
             print(f"Error receiving data: {e}")
 
-        # Write connection data to the log file (CSV)
-        self.write_log(log_data)
-
-        # Process received commands and evaluate alerts
         alert_level = self.check_alerts(commands)
+        logger.info(f"{connection_id},{','.join(commands)},{alert_level}")
+
         print(f"Connection closed: {connection_id}")
         print(f"Total commands received: {len(commands)}")
         print(f"Alert Level: {alert_level}")
-
-    def write_log(self, log_data):
-        """Writes log data to a CSV file."""
-        with open(LOG_FILE, 'a', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(log_data)
 
     def check_alerts(self, commands):
         """
@@ -91,27 +87,22 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
                     match_count += 1
                     print(
                         f"Alert triggered by pattern '{pattern_name}': {command}")
-        # Assigns an alert level based on the number of matches
-        return ALERT_LEVELS.get(match_count, 'Unknown')
+                    break  # Optional: break if you want only one match per command to count
+
+        # Determine alert level based on number of matches
+        if match_count == 0:
+            return 'None'
+        elif match_count == 1:
+            return 'Low'
+        elif match_count <= 3:
+            return 'Medium'
+        elif match_count <= 5:
+            return 'High'
+        else:
+            return 'Critical'
 
 
 if __name__ == "__main__":
     server = ThreadedTCPServer((HOST, PORT), ConnectionHandler)
-    with server:
-        print(f"Server running on {HOST}:{PORT}")
-        ip, port = server.server_address
-        # Start a thread with the server -- that thread will then start one
-        # more thread for each request
-        server_thread = threading.Thread(target=server.serve_forever)
-        # Exit the server thread when the main thread terminates
-        server_thread.daemon = True
-        server_thread.start()
-        print(f"Server loop running in thread: {server_thread.name}")
-
-        # Server can be shut down cleanly using ctrl-c or similar method
-        try:
-            while True:
-                pass
-        except KeyboardInterrupt:
-            server.shutdown()
-            server.server_close()
+    print(f"Server running on {HOST}:{PORT}")
+    server.serve_forever()
