@@ -1,6 +1,7 @@
 import socket
 import time
 import random
+import string
 
 # Configuration
 SERVER_IP = '127.0.0.1'  # Server IP address
@@ -12,11 +13,20 @@ COMMANDS = [
     'UPDATE users SET password = "hacked" WHERE id = 1;', 'INSERT INTO users (username, password) VALUES ("hacker", "p@ssword");',
     'netstat', 'telnet 192.168.0.1 25', '../etc/passwd', 'admin\' OR 1=1 --', '<script>alert("XSS")</script>'
 ]
+MAX_HARMLESS_MSG_LENGTH = 25  # Maximum length of harmless messages
 
 
 def generate_command():
     """Randomly choose a command from the list."""
     return random.choice(COMMANDS)
+
+
+def generate_harmless_message(max_length=MAX_HARMLESS_MSG_LENGTH):
+    """Generate a harmless message with a specified maximum length."""
+    length = random.randint(1, max_length)
+    characters = string.ascii_letters + string.digits
+    message = ''.join(random.choice(characters) for _ in range(length))
+    return message
 
 
 def random_interval():
@@ -26,11 +36,16 @@ def random_interval():
 
 def run_attack(sock, num_attacks):
     """Run the attack simulation for the given number of attacks."""
-    for _ in range(num_attacks):
-        cmd = generate_command()
-        sock.sendall(cmd.encode('utf-8'))
-        print(f"Sent: {cmd}")
-        time.sleep(random_interval())
+    if num_attacks == 0:
+        harmless_msg = generate_harmless_message()
+        sock.sendall(harmless_msg.encode('utf-8'))
+        print(f"Sent: {harmless_msg}")
+    else:
+        for _ in range(num_attacks):
+            cmd = generate_command()
+            sock.sendall(cmd.encode('utf-8'))
+            print(f"Sent: {cmd}")
+            time.sleep(random_interval())
 
 
 def main():
@@ -38,14 +53,15 @@ def main():
     Runs the show
     """
     start_time = time.time()
-    # Random number of connections between 2 and 3
-    num_connections = random.randint(2, 3)
+    num_connections = random.randint(5, 7)  # Random number of connections
     print(
-        f"Lanuching Sim Attack at {start_time}.\nUsing a total number of {num_connections} independent connections")
+        f"Launching Sim Attack at {start_time}.\nUsing a total number of {num_connections} independent connections")
+
     for _ in range(num_connections):
         # Random number of attacks per connection
-        print(f"Sim Attack number: {_}.\n")
-        num_attacks = random.randint(5, 20)
+        num_attacks = random.randint(0, 2)
+        print(
+            f"Sim Attack number: {_}.\nWith {num_attacks} number of attacks to send.")
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.connect((SERVER_IP, SERVER_PORT))
             run_attack(sock, num_attacks)

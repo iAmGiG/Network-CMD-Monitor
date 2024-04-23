@@ -1,3 +1,4 @@
+import socket
 import socketserver
 import threading
 import datetime
@@ -56,6 +57,8 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
     """
 
     def handle(self):
+        self.request.settimeout(100)  # Set timeout for this connection
+
         connection_id = str(uuid.uuid4())
         print(f"New connection: {connection_id} from {self.client_address}")
         commands = []
@@ -66,12 +69,13 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
                     break
                 commands.append(data.strip())
                 print(f"Received command: {data.strip()}")
+        except socket.timeout:
+            print(
+                f"Connection {connection_id} timed out after 100 seconds of inactivity.")
         except Exception as e:
             print(f"Error receiving data: {e}")
 
         alert_level = self.check_alerts(commands)
-        logger.info(f"{connection_id},{','.join(commands)},{alert_level}")
-
         print(f"Connection closed: {connection_id}")
         print(f"Total commands received: {len(commands)}")
         print(f"Alert Level: {alert_level}")
@@ -105,4 +109,21 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
 if __name__ == "__main__":
     server = ThreadedTCPServer((HOST, PORT), ConnectionHandler)
     print(f"Server running on {HOST}:{PORT}")
-    server.serve_forever()
+    with server:
+        ip, port = server.server_address
+        # Start a thread with the server -- that thread will then start one
+        # more thread for each request
+        server_thread = threading.Thread(target=server.serve_forever)
+        # Exit the server thread when the main thread terminates
+        server_thread.daemon = True
+        server_thread.start()
+        print(f"Server loop running in thread: {server_thread.name}")
+
+        # Server can be shut down cleanly using ctrl-c or similar method
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            print("Server is shutting down.")
+            server.shutdown()
+            server.server_close()
+            print("Server closed successfully.")
