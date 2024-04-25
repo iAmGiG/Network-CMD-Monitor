@@ -32,14 +32,21 @@ REGEX_PATTERNS = {
 
 
 def setup_logger():
-    """Sets up a logger with rotation."""
+    """Sets up a logger that writes to a CSV file."""
     logger = logging.getLogger('CommandLogger')
     logger.setLevel(logging.INFO)
-    handler = RotatingFileHandler(LOG_FILE, maxBytes=10240, backupCount=5)
-    formatter = logging.Formatter(
-        '%(asctime)s,%(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+
+    # Create a file handler for writing to the CSV file
+    file_handler = logging.FileHandler(LOG_FILE, mode='a')
+    file_handler.setFormatter(logging.Formatter('%(message)s'))
+    logger.addHandler(file_handler)
+
+    # Create a streaming handler for console output
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
+    logger.addHandler(console_handler)
+
     return logger
 
 
@@ -56,6 +63,7 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
     Handles incoming network connections, logs command data, and evaluates potential threats.
     """
 
+
     def handle(self):
         self.request.settimeout(100)  # Set timeout for this connection
 
@@ -67,11 +75,11 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
                 data = self.request.recv(1024).decode()
                 if not data:
                     break
-                commands.append(data.strip())
-                print(f"Received command: {data.strip()}")
+                command = data.strip()
+                commands.append(command)
+                print(f"Received command: {command}")
         except socket.timeout:
-            print(
-                f"Connection {connection_id} timed out after 100 seconds of inactivity.")
+            print(f"Connection {connection_id} timed out after 100 seconds of inactivity.")
         except Exception as e:
             print(f"Error receiving data: {e}")
 
@@ -79,6 +87,9 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
         print(f"Connection closed: {connection_id}")
         print(f"Total commands received: {len(commands)}")
         print(f"Alert Level: {alert_level}")
+
+        # Log all commands in a single line, followed by the alert level
+        logger.info(f"{connection_id},{datetime.datetime.now()},'{' '.join(commands)}',{alert_level}")
 
     def check_alerts(self, commands):
         """
@@ -89,22 +100,12 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
             for pattern_name, regex in REGEX_PATTERNS.items():
                 if re.search(regex, command):
                     match_count += 1
-                    print(
-                        f"Alert triggered by pattern '{pattern_name}': {command}")
+                    print(f"Alert triggered by pattern '{pattern_name}': {command}")
                     break  # Optional: break if you want only one match per command to count
 
         # Determine alert level based on number of matches
-        if match_count == 0:
-            return 'None'
-        elif match_count == 1:
-            return 'Low'
-        elif match_count <= 3:
-            return 'Medium'
-        elif match_count <= 5:
-            return 'High'
-        else:
-            return 'Critical'
-
+        alert_level = ALERT_LEVELS.get(match_count, 'Unknown')
+        return alert_level
 
 if __name__ == "__main__":
     server = ThreadedTCPServer((HOST, PORT), ConnectionHandler)

