@@ -2,7 +2,6 @@ import socket
 import socketserver
 import threading
 import datetime
-import csv
 import uuid
 import re
 import logging
@@ -63,7 +62,6 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
     Handles incoming network connections, logs command data, and evaluates potential threats.
     """
 
-
     def handle(self):
         self.request.settimeout(100)  # Set timeout for this connection
 
@@ -79,7 +77,8 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
                 commands.append(command)
                 print(f"Received command: {command}")
         except socket.timeout:
-            print(f"Connection {connection_id} timed out after 100 seconds of inactivity.")
+            print(
+                f"Connection {connection_id} timed out after 100 seconds of inactivity.")
         except Exception as e:
             print(f"Error receiving data: {e}")
 
@@ -89,7 +88,8 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
         print(f"Alert Level: {alert_level}")
 
         # Log all commands in a single line, followed by the alert level
-        logger.info(f"{connection_id},{datetime.datetime.now()},'{' '.join(commands)}',{alert_level}")
+        logger.info(
+            f"{connection_id},{datetime.datetime.now()},'{' '.join(commands)}',{alert_level}")
 
     def check_alerts(self, commands):
         """
@@ -100,12 +100,14 @@ class ConnectionHandler(socketserver.BaseRequestHandler):
             for pattern_name, regex in REGEX_PATTERNS.items():
                 if re.search(regex, command):
                     match_count += 1
-                    print(f"Alert triggered by pattern '{pattern_name}': {command}")
+                    print(
+                        f"Alert triggered by pattern '{pattern_name}': {command}")
                     break  # Optional: break if you want only one match per command to count
 
         # Determine alert level based on number of matches
         alert_level = ALERT_LEVELS.get(match_count, 'Unknown')
         return alert_level
+
 
 if __name__ == "__main__":
     server = ThreadedTCPServer((HOST, PORT), ConnectionHandler)
